@@ -5,31 +5,34 @@ an automated bruteforce attack on a shift cipher
 '''
 from LetterFrequency import LetterFrequency
 from string import upper
+import sys
 
 def main():
     
-    text_file = open('../resources/hinter-den-wortbergen.txt', 'r')
-    #text_file = open('../resources/theaterstueck-mit-g.txt', 'r')
-    #text_file = open('../resources/geschichten-von-a-z.txt', 'r')
-    #text_file = open('../resources/quark.txt', 'r')
+    if len(sys.argv) is 1:
+        filename = '../resources/hinter-den-wortbergen.txt'
+    else:
+        filename = sys.argv[1]
     
-    cipher_text = text_file.read()
-    text_file.close()
+    textfile = open(filename, 'r')
+
+    ciphertext = textfile.read()
+    textfile.close()
     
-    dictionary_file = open('../resources/ngerman', 'r')
-    dictionary = set(upper(dictionary_file.read()).split("\n"))
-    dictionary_file.close()
+    dictionaryfile = open('../resources/ngerman', 'r')
+    dictionary = set(upper(dictionaryfile.read()).split("\n"))
+    dictionaryfile.close()
     
-    frequencies = map(lambda key:LetterFrequency(cipher_text, key) , range(26))
+    frequencies = map(lambda key:LetterFrequency(ciphertext, key) , range(26))
     frequencies = sorted(frequencies, key=LetterFrequency.average_deviation)
 
     max_wordlength = 25
-    length = len(cipher_text)
+    length = len(ciphertext)
     limit = length * 1/3
 
     def find():
         for frequency in frequencies:
-            text = frequency.shift(cipher_text)
+            text = frequency.shift(ciphertext)
             limit = length * 1/3
             
             words = []
@@ -61,7 +64,7 @@ def main():
         print "Nothing found"
     else:
         print "Encryption key is %s" % best.key
-        print best.shift(cipher_text)
+        print best.shift(ciphertext)
         
 if __name__ == '__main__':
     main()
